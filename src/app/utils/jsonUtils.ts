@@ -1,15 +1,24 @@
 // Performs a deep comparison of two objects and returns a diff as a string matrix
-export function deepDiff(obj1: any, obj2: any): string[][] {
+export function deepDiff(
+  obj1: object,
+  obj2: object
+): string[][] {
   const diffs: string[][] = [["Key", "JSON 1", "JSON 2"]];
 
-  function walk(keyPath: string, val1: any, val2: any) {
-    if (typeof val1 === "object" && val1 !== null && typeof val2 === "object" && val2 !== null) {
-      const keys = new Set([...Object.keys(val1), ...Object.keys(val2)]);
+  function walk(keyPath: string, val1: object | null, val2: object | null): void {
+    if (
+      val1 && typeof val1 === "object" &&
+      val2 && typeof val2 === "object"
+    ) {
+      const keys = new Set([
+        ...Object.keys(val1),
+        ...Object.keys(val2)
+      ]);
       for (const key of keys) {
         walk(
           keyPath ? `${keyPath}.${key}` : key,
-          val1[key],
-          val2[key]
+          (val1 as Record<string, unknown>)[key] as object | null,
+          (val2 as Record<string, unknown>)[key] as object | null
         );
       }
     } else if (val1 !== val2) {
