@@ -5,7 +5,18 @@ type DiffTableProps = {
 };
 
 export function DiffTable({ diff }: DiffTableProps) {
-  if (!diff.length) return null;
+  if (!diff.length) {
+    return <></>;
+  }
+
+  if (diff.length === 1 && diff[0].length === 1 && diff[0][0] === "Invalid JSON") {
+    return (
+      <div className="text-red-600 text-xs mt-4">
+        Invalid JSON input. Please check your JSON format.
+      </div>
+    );
+  }
+
   return (
     <div className="mt-8 w-full max-w-5xl overflow-x-auto">
       <h2 className="text-base sm:text-lg font-semibold mb-2">Differences</h2>
