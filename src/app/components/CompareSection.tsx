@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { JsonInput } from "./JsonInput";
 import { DiffTable } from "./DiffTable";
 import { formatJson, deepDiff } from "../utils/jsonUtils";
+import { repairJson } from "../utils/jsonRepair";
 
 export function CompareSection() {
   const [leftJson, setLeftJson] = useState("");
@@ -16,6 +17,22 @@ export function CompareSection() {
       setDiff(differences);
     } catch {
       setDiff([["Invalid JSON", "", ""]]);
+    }
+  }
+
+  function handleCompareAndFormat() {
+    try {
+      const repairedLeftJson = repairJson(leftJson);
+      const repairedRightJson = repairJson(rightJson);
+      const formattedLeft = formatJson(repairedLeftJson);
+      const formattedRight = formatJson(repairedRightJson);
+      setLeftJson(formattedLeft);
+      setRightJson(formattedRight);
+      setDiff([]); // Clear previous diff
+      handleCompare();
+    } catch (e) {
+        console.error("Error repairing JSON:", e);
+        setDiff([["Could not repair or parse JSON", "", ""]]);
     }
   }
 
@@ -40,6 +57,12 @@ export function CompareSection() {
         onClick={handleCompare}
       >
         Compare JSONs
+      </button>
+      <button
+        className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full sm:w-auto text-base sm:text-lg"
+        onClick={handleCompareAndFormat}
+      >
+        Repair & Compare
       </button>
       <DiffTable diff={diff} />
     </>
